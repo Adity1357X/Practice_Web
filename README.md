@@ -45,3 +45,17 @@ gh repo create ai-quiz-app --private --source=. --push   # or push to your remot
 ```
 After cloning elsewhere: `Copy-Item .env.example server\.env`, add your key, `npm run install:all`, `npm run dev`.
 API protections: key server-side only, per-IP rate limit (`GEN_LIMIT_PER_HOUR`), optional origin lock (`ALLOWED_ORIGINS`), small JSON body cap, no `X-Powered-By` header.
+
+## Publishing online (why GitHub Pages alone shows only the README)
+GitHub Pages hosts **static files only** — it cannot run the Node backend, and `client/dist/` isn't even pushed (it's git-ignored). So a Pages site from this repo just renders the README. Publish properly instead:
+
+**Backend (1 click, free): Render**
+1. Push `quiz-app/` contents to GitHub (see above).
+2. Go to https://dashboard.render.com → New → Blueprint → select your repo (`render.yaml` is included).
+3. Add secret env vars when prompted: `AI_API_KEY`, `GEMINI_API_KEY`.
+4. You get a live API, e.g. `https://ai-quiz-app.onrender.com` (`/api/health` to check).
+
+**Frontend (free): Vercel or Netlify**
+1. Import the same repo; set root directory to `client`, build command `npm run build`, output `dist`.
+2. Add env var `VITE_API_URL=https://ai-quiz-app.onrender.com` (your Render URL).
+3. Deploy — full app live, keys stay on the backend where they belong.
