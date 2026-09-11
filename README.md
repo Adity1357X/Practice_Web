@@ -55,7 +55,13 @@ GitHub Pages hosts **static files only** — it cannot run the Node backend, and
 3. Add secret env vars when prompted: `AI_API_KEY`, `GEMINI_API_KEY`.
 4. You get a live API, e.g. `https://ai-quiz-app.onrender.com` (`/api/health` to check).
 
-**Frontend (free): Vercel or Netlify**
+**Frontend on GitHub Pages (app UI on a public link)**
+A workflow (`.github/workflows/pages.yml`) is included — push to `main` and it builds `client/` automatically.
+1. On GitHub: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Your app link becomes `https://YOUR-USERNAME.github.io/REPO-NAME/` (no README — the real UI).
+3. Note: Pages has no backend, so generating shows a clear "AI server not connected" notice until you connect one: deploy the backend on Render, then add repo secret `VITE_API_URL` = your Render URL (**Settings → Secrets → Actions**) and re-run the workflow — the same public link then generates real quizzes.
+
+**Alternative frontend hosts (Vercel or Netlify)**
 1. Import the same repo; set root directory to `client`, build command `npm run build`, output `dist`.
 2. Add env var `VITE_API_URL=https://ai-quiz-app.onrender.com` (your Render URL).
 3. Deploy — full app live, keys stay on the backend where they belong.

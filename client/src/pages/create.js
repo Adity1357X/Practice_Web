@@ -1,5 +1,5 @@
 import { CLASSES, MEDIUMS, DIFFICULTIES, COUNTS, QUESTION_TYPES, SUBJECTS_BY_CLASS, SUB_SUBJECTS, chaptersFor } from "../data/curriculum.js";
-import { apiGenerate, apiModels } from "../lib/api.js";
+import { apiGenerate, apiModels, apiHealth } from "../lib/api.js";
 import { store, uid } from "../lib/store.js";
 
 const LOADS = ["Preparing your quiz...", "Generating questions...", "Preparing answers...", "Checking generated questions...", "Almost ready..."];
@@ -8,6 +8,7 @@ export function renderCreate(el, ctx) {
   const s = store.settings();
   const d = s.defaults || {};
   el.innerHTML = `<h1>Create Quiz ✨</h1>
+  <div id="f-conn"></div>
   <div class="card"><div class="step"><div class="step-n">1</div><div style="flex:1"><h3>Class, Subject & Topic</h3><div class="grid g2">
     <div><label>Class</label><select id="f-class"><option value="">Select</option>${CLASSES.map(c => `<option ${d.class === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
     <div><label>Subject</label><select id="f-sub"><option value="">Select class first</option></select></div>
@@ -29,6 +30,10 @@ export function renderCreate(el, ctx) {
   <div id="f-err"></div>`;
 
   const $ = (id) => el.querySelector(id);
+  apiHealth().then(h => { if (!h || h.ok !== true) throw 0; }).catch(() => {
+    const c = $("#f-conn");
+    if (c) c.innerHTML = `<div class="card" style="border:1.5px solid #facc15;background:#fffbeb"><b>⚠️ AI server not connected.</b><p class=mut style="margin:6px 0 0">This static link has no backend, so quizzes can't generate here. Run <b>npm run dev</b> on your computer, or deploy the backend (see README → Publishing online) for a fully working link.</p></div>`;
+  });
   const selTypes = new Set();
   el.querySelectorAll(".chip").forEach(ch => ch.onclick = () => { const t = ch.dataset.t; selTypes.has(t) ? selTypes.delete(t) : selTypes.add(t); ch.classList.toggle("on"); });
   const syncSub = () => {
